@@ -108,7 +108,7 @@ $list_soal = $soalObj->getSoalByHalaman($page);
                 <?php foreach ($list_soal as $s): ?>
                     <div class="soal-card">
                         <div class="soal-judul">
-                            <?php echo $s['nomor'] . ". " . htmlentities($s['pertanyaan']); ?>
+                            <?php echo $s['nomor'] . ". " . htmlentities((string)$s['pertanyaan']); ?>
                         </div>
 
                         <?php 
@@ -126,7 +126,7 @@ $list_soal = $soalObj->getSoalByHalaman($page);
                                 <li class="opsi-item">
                                     <label>
                                         <input type="radio" name="jawaban[<?php echo $s['idsoal']; ?>]" value="<?php echo $j['idjawaban']; ?>" <?php echo $checked; ?> required>
-                                        <?php echo htmlentities($j['isi_jawaban']); ?>
+                                        <?php echo htmlentities((string)$j['isi_jawaban']); ?>
                                     </label>
                                 </li>
                             <?php endforeach; ?>

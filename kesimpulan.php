@@ -58,19 +58,19 @@ $skor_akhir = 0;
 
                     <div class="kesimpulan-item">
                         <div class="kesimpulan-pertanyaan">
-                            <?php echo $s['nomor'] . ". " . htmlentities($s['pertanyaan']); ?>
+                            <?php echo $s['nomor'] . ". " . htmlentities((string)$s['pertanyaan']); ?>
                         </div>
 
                         <?php if ($is_benar): ?>
                             <div class="jawaban-user">
-                                Jawaban user : <?php echo htmlentities($isi_user); ?> <span class="teks-benar">(benar)</span>
+                                Jawaban user : <?php echo htmlentities((string)$isi_user); ?> <span class="teks-benar">(benar)</span>
                             </div>
                         <?php else: ?>
                             <div class="jawaban-user">
-                                Jawaban user : <?php echo htmlentities($isi_user); ?> <span class="teks-salah">(salah)</span>
+                                Jawaban user : <?php echo htmlentities((string)$isi_user); ?> <span class="teks-salah">(salah)</span>
                             </div>
                             <div class="jawaban-benar">
-                                Jawaban benar : <?php echo htmlentities($isi_benar); ?>
+                                Jawaban benar : <?php echo htmlentities((string)$isi_benar); ?>
                             </div>
                         <?php endif; ?>
                     </div>
