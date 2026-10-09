@@ -14,20 +14,17 @@ if (isset($_GET['action']) && $_GET['action'] === 'reset') {
 $soalObj = new soal();
 $jawabanObj = new jawaban();
 
-$daftar_halaman = $soalObj->getAllPages();
-$total_halaman = count($daftar_halaman);
+$total_halaman = $soalObj->getTotalHalaman();
 
 if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $halaman_saat_ini = isset($_POST['halaman_saat_ini']) ? (int)$_POST['halaman_saat_ini'] : 1;
+    $halaman_saat_ini = (isset($_POST['halaman_saat_ini']) && is_numeric($_POST['halaman_saat_ini'])) ? (int)$_POST['halaman_saat_ini'] : 1;
     $tombol = isset($_POST['tombol']) ? $_POST['tombol'] : 'Next';
 
-    
     if (isset($_POST['jawaban']) && is_array($_POST['jawaban'])) {
         foreach ($_POST['jawaban'] as $idsoal => $idjawaban) {
             $idsoal = (int)$idsoal;
             $idjawaban = (int)$idjawaban;
-            
-            
+
             $is_benar = $jawabanObj->checkJawaban($idjawaban) ? 1 : 0;
 
             $_SESSION['jawaban_user'][$idsoal] = $idjawaban;
@@ -35,43 +32,32 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') 
         }
     }
 
-    
-    $posisi = array_search($halaman_saat_ini, $daftar_halaman);
-    if ($posisi === false) {
-        $posisi = 0;
-    }
-
     if ($tombol === 'Next') {
-        
-        if ($posisi >= $total_halaman - 1) {
+        if ($halaman_saat_ini >= $total_halaman) {
             header("Location: kesimpulan.php");
             exit();
         } else {
-            $halaman_berikutnya = $daftar_halaman[$posisi + 1];
+            $halaman_berikutnya = $halaman_saat_ini + 1;
             header("Location: index.php?page=" . $halaman_berikutnya);
             exit();
         }
     } elseif ($tombol === 'Previous') {
-        
-        if ($posisi > 0) {
-            $halaman_sebelumnya = $daftar_halaman[$posisi - 1];
-            header("Location: index.php?page=" . $halaman_sebelumnya);
-            exit();
-        } else {
-            header("Location: index.php?page=" . $daftar_halaman[0]);
-            exit();
-        }
+        $halaman_sebelumnya = ($halaman_saat_ini > 1) ? ($halaman_saat_ini - 1) : 1;
+        header("Location: index.php?page=" . $halaman_sebelumnya);
+        exit();
     }
 }
 
-$page = isset($_GET['page']) ? (int)$_GET['page'] : (isset($daftar_halaman[0]) ? $daftar_halaman[0] : 1);
-if (!in_array($page, $daftar_halaman) && !empty($daftar_halaman)) {
-    $page = $daftar_halaman[0];
+$page = (isset($_GET['page']) && is_numeric($_GET['page'])) ? (int)$_GET['page'] : 1;
+if ($page < 1) {
+    $page = 1;
+}
+if ($page > $total_halaman) {
+    $page = $total_halaman;
 }
 
-$current_idx = array_search($page, $daftar_halaman);
-$is_first_page = ($current_idx === 0 || $current_idx === false);
-$is_last_page = ($current_idx !== false && $current_idx === $total_halaman - 1);
+$is_first_page = ($page <= 1);
+$is_last_page = ($page >= $total_halaman);
 
 $list_soal = $soalObj->getSoalByHalaman($page);
 ?>
@@ -87,13 +73,13 @@ $list_soal = $soalObj->getSoalByHalaman($page);
     <div class="container">
         <h1>Kuis Online Trivia</h1>
 
-        <?php if (empty($daftar_halaman) || empty($list_soal)): ?>
+        <?php if (empty($list_soal)): ?>
             <div class="soal-card">
                 <p>Data soal belum tersedia di database. Pastikan database <code>fullstack</code> sudah dibuat dan file <code>quiz.sql</code> telah di-import.</p>
             </div>
         <?php else: ?>
             <div class="info-halaman">
-                Halaman <?php echo ($current_idx + 1); ?> dari <?php echo $total_halaman; ?> (Nomor Halaman Kolom DB: <?php echo $page; ?>)
+                Halaman <?php echo $page; ?> dari <?php echo $total_halaman; ?>
             </div>
 
             <form method="POST" action="index.php">
@@ -119,7 +105,7 @@ $list_soal = $soalObj->getSoalByHalaman($page);
                                 ?>
                                 <li class="opsi-item">
                                     <label>
-                                        <input type="radio" name="jawaban[<?php echo $s['idsoal']; ?>]" value="<?php echo $j['idjawaban']; ?>" <?php echo $checked; ?> required>
+                                        <input type="radio" name="jawaban[<?php echo $s['idsoal']; ?>]" value="<?php echo $j['idjawaban']; ?>" <?php echo $checked; ?>>
                                         <?php echo htmlentities((string)$j['isi_jawaban']); ?>
                                     </label>
                                 </li>
@@ -130,7 +116,7 @@ $list_soal = $soalObj->getSoalByHalaman($page);
 
                 <div class="nav-buttons">
                     <?php if (!$is_first_page): ?>
-                        <input type="submit" name="tombol" value="Previous" class="btn" formnovalidate>
+                        <input type="submit" name="tombol" value="Previous" class="btn">
                     <?php endif; ?>
 
                     <div class="nav-buttons-right">
