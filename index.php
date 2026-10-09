@@ -1,11 +1,9 @@
 <?php
 session_start();
 
-// Aturan 5: Menggunakan class soal dan jawaban buatan sendiri, bebas dari perintah SQL di halaman ini
 require_once("soal.php");
 require_once("jawaban.php");
 
-// Tangani aksi reset / play again jika diarahkan ke index.php?action=reset
 if (isset($_GET['action']) && $_GET['action'] === 'reset') {
     unset($_SESSION['jawaban_user']);
     unset($_SESSION['apakah_benar']);
@@ -16,22 +14,20 @@ if (isset($_GET['action']) && $_GET['action'] === 'reset') {
 $soalObj = new soal();
 $jawabanObj = new jawaban();
 
-// Mengambil seluruh nomor halaman yang tersedia secara dinamis
 $daftar_halaman = $soalObj->getAllPages();
 $total_halaman = count($daftar_halaman);
 
-// Proses form submission (Next / Previous)
 if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $halaman_saat_ini = isset($_POST['halaman_saat_ini']) ? (int)$_POST['halaman_saat_ini'] : 1;
     $tombol = isset($_POST['tombol']) ? $_POST['tombol'] : 'Next';
 
-    // Simpan jawaban user pada halaman saat ini ke dalam session sambil diperiksa benar/salah
+    
     if (isset($_POST['jawaban']) && is_array($_POST['jawaban'])) {
         foreach ($_POST['jawaban'] as $idsoal => $idjawaban) {
             $idsoal = (int)$idsoal;
             $idjawaban = (int)$idjawaban;
             
-            // Cek apakah jawaban benar melalui class jawaban
+            
             $is_benar = $jawabanObj->checkJawaban($idjawaban) ? 1 : 0;
 
             $_SESSION['jawaban_user'][$idsoal] = $idjawaban;
@@ -39,14 +35,14 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') 
         }
     }
 
-    // Cari posisi index halaman saat ini dalam daftar halaman
+    
     $posisi = array_search($halaman_saat_ini, $daftar_halaman);
     if ($posisi === false) {
         $posisi = 0;
     }
 
     if ($tombol === 'Next') {
-        // Jika sudah di halaman terakhir, lanjut ke halaman kesimpulan
+        
         if ($posisi >= $total_halaman - 1) {
             header("Location: kesimpulan.php");
             exit();
@@ -56,7 +52,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') 
             exit();
         }
     } elseif ($tombol === 'Previous') {
-        // Jika klik Previous, kembali ke halaman sebelumnya
+        
         if ($posisi > 0) {
             $halaman_sebelumnya = $daftar_halaman[$posisi - 1];
             header("Location: index.php?page=" . $halaman_sebelumnya);
@@ -68,7 +64,6 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') 
     }
 }
 
-// Menentukan halaman yang sedang ditampilkan
 $page = isset($_GET['page']) ? (int)$_GET['page'] : (isset($daftar_halaman[0]) ? $daftar_halaman[0] : 1);
 if (!in_array($page, $daftar_halaman) && !empty($daftar_halaman)) {
     $page = $daftar_halaman[0];
@@ -78,7 +73,6 @@ $current_idx = array_search($page, $daftar_halaman);
 $is_first_page = ($current_idx === 0 || $current_idx === false);
 $is_last_page = ($current_idx !== false && $current_idx === $total_halaman - 1);
 
-// Mengambil soal untuk halaman ini
 $list_soal = $soalObj->getSoalByHalaman($page);
 ?>
 <!DOCTYPE html>
@@ -112,7 +106,7 @@ $list_soal = $soalObj->getSoalByHalaman($page);
                         </div>
 
                         <?php 
-                        // Ambil opsi jawaban (posisi diacak secara random sesuai ketentuan tugas)
+                        
                         $list_jawaban = $jawabanObj->getJawabanBySoal($s['idsoal']);
                         ?>
                         <ul class="opsi-list">

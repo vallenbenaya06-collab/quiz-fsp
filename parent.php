@@ -1,5 +1,5 @@
 <?php
-// Parent Class untuk koneksi database (Slide Week 04b)
+
 require_once("data.php");
 
 class orangtua {

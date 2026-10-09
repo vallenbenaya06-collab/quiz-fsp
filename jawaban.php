@@ -1,5 +1,5 @@
 <?php
-// Class jawaban turunan dari orangtua (Slide Week 04b)
+
 require_once("parent.php");
 
 class jawaban extends orangtua {
@@ -7,7 +7,6 @@ class jawaban extends orangtua {
         parent::__construct();
     }
 
-    // Mengambil pilihan jawaban untuk suatu soal dengan posisi diacak secara random
     public function getJawabanBySoal($idsoal) {
         $sql = "SELECT * FROM jawaban WHERE idsoal = ? ORDER BY RAND()";
         $stmt = $this->mysqli->prepare($sql);
@@ -21,7 +20,6 @@ class jawaban extends orangtua {
         return $list;
     }
 
-    // Mengambil satu data jawaban berdasarkan idjawaban
     public function getJawabanById($idjawaban) {
         $sql = "SELECT * FROM jawaban WHERE idjawaban = ?";
         $stmt = $this->mysqli->prepare($sql);
@@ -31,7 +29,6 @@ class jawaban extends orangtua {
         return $res->fetch_assoc();
     }
 
-    // Mengambil kunci jawaban yang benar untuk suatu soal
     public function getJawabanBenar($idsoal) {
         $sql = "SELECT * FROM jawaban WHERE idsoal = ? AND benarkah = 1 LIMIT 1";
         $stmt = $this->mysqli->prepare($sql);
@@ -41,7 +38,6 @@ class jawaban extends orangtua {
         return $res->fetch_assoc();
     }
 
-    // Memeriksa apakah suatu jawaban benar atau salah
     public function checkJawaban($idjawaban) {
         $data = $this->getJawabanById($idjawaban);
         if ($data && $data['benarkah'] == 1) {

@@ -1,17 +1,14 @@
 <?php
 session_start();
 
-// Aturan 5: Menggunakan class soal dan jawaban buatan sendiri, bebas dari perintah SQL di halaman ini
 require_once("soal.php");
 require_once("jawaban.php");
 
 $soalObj = new soal();
 $jawabanObj = new jawaban();
 
-// Ambil semua soal urut berdasarkan kolom nomor
 $semua_soal = $soalObj->getAllSoal();
 
-// Hitung skor akhir (1 nomor benar bernilai 10 sesuai instruksi tugas)
 $skor_akhir = 0;
 ?>
 <!DOCTYPE html>
@@ -50,7 +47,7 @@ $skor_akhir = 0;
                     if ($is_benar) {
                         $skor_akhir += 10;
                     } else {
-                        // Ambil kunci jawaban yang benar
+                        
                         $data_benar = $jawabanObj->getJawabanBenar($idsoal);
                         $isi_benar = $data_benar ? $data_benar['isi_jawaban'] : "-";
                     }

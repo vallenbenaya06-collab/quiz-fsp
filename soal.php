@@ -1,5 +1,5 @@
 <?php
-// Class soal turunan dari orangtua (Slide Week 04b)
+
 require_once("parent.php");
 
 class soal extends orangtua {
@@ -7,7 +7,6 @@ class soal extends orangtua {
         parent::__construct();
     }
 
-    // Mengambil daftar nomor halaman yang tersedia secara dinamis
     public function getAllPages() {
         $sql = "SELECT DISTINCT halaman_ke FROM soal ORDER BY halaman_ke ASC";
         $stmt = $this->mysqli->prepare($sql);
@@ -20,7 +19,6 @@ class soal extends orangtua {
         return $pages;
     }
 
-    // Mengambil semua soal pada halaman tertentu berdasarkan kolom halaman_ke
     public function getSoalByHalaman($halaman_ke) {
         $sql = "SELECT * FROM soal WHERE halaman_ke = ? ORDER BY nomor ASC";
         $stmt = $this->mysqli->prepare($sql);
@@ -34,7 +32,6 @@ class soal extends orangtua {
         return $list;
     }
 
-    // Mengambil seluruh data soal untuk halaman kesimpulan
     public function getAllSoal() {
         $sql = "SELECT * FROM soal ORDER BY nomor ASC";
         $stmt = $this->mysqli->prepare($sql);
@@ -47,7 +44,6 @@ class soal extends orangtua {
         return $list;
     }
 
-    // Mengambil data satu soal berdasarkan idsoal
     public function getSoalById($idsoal) {
         $sql = "SELECT * FROM soal WHERE idsoal = ?";
         $stmt = $this->mysqli->prepare($sql);
