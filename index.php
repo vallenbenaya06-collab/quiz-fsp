@@ -20,6 +20,8 @@ if ($total_halaman < 1) {
     $total_halaman = 1;
 }
 
+$pesan_error = "";
+
 if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $halaman_saat_ini = (isset($_POST['halaman_saat_ini']) && is_numeric($_POST['halaman_saat_ini'])) ? (int)$_POST['halaman_saat_ini'] : 1;
     $tombol = isset($_POST['tombol']) ? $_POST['tombol'] : 'Next';
@@ -37,13 +39,28 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') 
     }
 
     if ($tombol === 'Next') {
-        if ($halaman_saat_ini >= $total_halaman) {
-            header("Location: kesimpulan.php");
-            exit();
+        // Validasi Sisi Server (Materi Week 06): Pastikan semua soal di halaman ini sudah dijawab
+        $soal_halaman_ini = $soalObj->getSoalByHalaman($halaman_saat_ini);
+        $lengkap = true;
+        foreach ($soal_halaman_ini as $s) {
+            if (!isset($_SESSION['jawaban_user'][$s['idsoal']])) {
+                $lengkap = false;
+                break;
+            }
+        }
+
+        if (!$lengkap) {
+            $pesan_error = "Harap jawab semua soal pada halaman ini sebelum lanjut ke halaman berikutnya!";
+            $_GET['page'] = $halaman_saat_ini;
         } else {
-            $halaman_berikutnya = $halaman_saat_ini + 1;
-            header("Location: index.php?page=" . $halaman_berikutnya);
-            exit();
+            if ($halaman_saat_ini >= $total_halaman) {
+                header("Location: kesimpulan.php");
+                exit();
+            } else {
+                $halaman_berikutnya = $halaman_saat_ini + 1;
+                header("Location: index.php?page=" . $halaman_berikutnya);
+                exit();
+            }
         }
     } elseif ($tombol === 'Previous') {
         $halaman_sebelumnya = ($halaman_saat_ini > 1) ? ($halaman_saat_ini - 1) : 1;
@@ -76,6 +93,12 @@ $list_soal = $soalObj->getSoalByHalaman($page);
 <body>
     <div class="container">
         <h1>Kuis Online Trivia</h1>
+
+        <?php if (!empty($pesan_error)): ?>
+            <div class="pesan-error">
+                <?php echo htmlentities($pesan_error); ?>
+            </div>
+        <?php endif; ?>
 
         <?php if (empty($daftar_halaman) || empty($list_soal)): ?>
             <div class="soal-card">
