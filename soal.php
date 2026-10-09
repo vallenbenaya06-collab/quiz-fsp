@@ -7,22 +7,25 @@ class soal extends orangtua {
         parent::__construct();
     }
 
-    public function getTotalHalaman() {
-        $sql = "SELECT halaman_ke FROM soal ORDER BY halaman_ke DESC LIMIT 1";
-        $stmt = $this->mysqli->prepare($sql);
-        $stmt->execute();
-        $res = $stmt->get_result();
-        $row = $res->fetch_assoc();
-        return $row ? (int)$row['halaman_ke'] : 1;
-    }
-
     public function getAllPages() {
-        $total = $this->getTotalHalaman();
+        $sql = "SELECT DISTINCT halaman_ke FROM soal ORDER BY halaman_ke ASC";
+        $stmt = $this->mysqli->prepare($sql);
         $pages = array();
-        for ($i = 1; $i <= $total; $i++) {
-            $pages[] = $i;
+        if ($stmt) {
+            $stmt->execute();
+            $res = $stmt->get_result();
+            if ($res) {
+                while ($row = $res->fetch_assoc()) {
+                    $pages[] = (int)$row['halaman_ke'];
+                }
+            }
         }
         return $pages;
+    }
+
+    public function getTotalHalaman() {
+        $pages = $this->getAllPages();
+        return !empty($pages) ? count($pages) : 1;
     }
 
     public function getSoalByHalaman($halaman_ke) {

@@ -14,7 +14,11 @@ if (isset($_GET['action']) && $_GET['action'] === 'reset') {
 $soalObj = new soal();
 $jawabanObj = new jawaban();
 
-$total_halaman = $soalObj->getTotalHalaman();
+$daftar_halaman = $soalObj->getAllPages();
+$total_halaman = count($daftar_halaman);
+if ($total_halaman < 1) {
+    $total_halaman = 1;
+}
 
 if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $halaman_saat_ini = (isset($_POST['halaman_saat_ini']) && is_numeric($_POST['halaman_saat_ini'])) ? (int)$_POST['halaman_saat_ini'] : 1;
@@ -73,7 +77,7 @@ $list_soal = $soalObj->getSoalByHalaman($page);
     <div class="container">
         <h1>Kuis Online Trivia</h1>
 
-        <?php if (empty($list_soal)): ?>
+        <?php if (empty($daftar_halaman) || empty($list_soal)): ?>
             <div class="soal-card">
                 <p>Data soal belum tersedia di database. Pastikan database <code>fullstack</code> sudah dibuat dan file <code>quiz.sql</code> telah di-import.</p>
             </div>
