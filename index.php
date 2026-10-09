@@ -95,7 +95,7 @@ $list_soal = $soalObj->getSoalByHalaman($page);
         <h1>Kuis Online Trivia</h1>
 
         <?php if (!empty($pesan_error)): ?>
-            <div class="pesan-error">
+            <div class="pesan-error" style="color: red; font-weight: bold;">
                 <?php echo htmlentities($pesan_error); ?>
             </div>
         <?php endif; ?>

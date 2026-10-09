@@ -165,11 +165,11 @@ h1 {
 
 .pesan-error {
     background-color: #ffdce0;
-    color: #86181d;
-    border: 1px solid #cea0a5;
+    color: red;
+    border: 1px solid #f5c6cb;
     padding: 12px 16px;
     border-radius: 6px;
     margin-bottom: 20px;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: bold;
 }
